@@ -18,7 +18,7 @@
 ![](https://github.com/andreika47/Quiet-CTF/blob/main/BoilerRoom/pics/5.png)
 
 ## CWE-340: Generation of Predictable Numbers or Identifiers
-###Как эксплуатировать уязвимость?
+### Как эксплуатировать уязвимость?
 При анализе кода необходимо было обратить внимание на то, как генерируются идентификаторы заказа. Для генерация используется самописная функция, которая вычисляет SHA256 хэш от timestamp времени оформления заказа:
 
 ![](https://github.com/andreika47/Quiet-CTF/blob/main/BoilerRoom/pics/6.png)
@@ -37,11 +37,11 @@ November 16 HH:MM:SS.mmm
 
 Пример скрипта для перебора [brute_id.py](https://github.com/andreika47/Quiet-CTF/blob/main/BoilerRoom/solvers/brute_id.py)
 
-###Как исправить уязвимость?
+### Как исправить уязвимость?
 Необходимо использовать безопасный генератор ID. Нужно убедиться, что генератор ID не делает их предсказуемыми. Пример подходящего генератора: https://pkg.go.dev/github.com/google/uuid
 
-##CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')
-###Как эксплуатировать уязвимость?
+## CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')
+### Как эксплуатировать уязвимость?
 В ходе анализа конфигурации Nginx можно было заметить странную деталь: Nginx проверяет наличие заголовка `True-Real-Ip`, и если его нет, то добавляет его со значением равной внутренней переменной `remote_addr` (IP адрес клиента). При этом, если заголовок уже был установлен, то его значение сохраняется. Для проверки, что заголовок корректен используется регулярное выражение:
 ![](https://github.com/andreika47/Quiet-CTF/blob/main/BoilerRoom/pics/9.png)
 
@@ -75,13 +75,13 @@ curl "http://0.0.0.0:8000/api/bill/78a06a332e0eef8050e0109cf92ff15aff822c107e431
 
 Или получать идентификаторы заказа из имен чеков и использовать их для получения флага.
 
-###Как исправить уязвимость?
+### Как исправить уязвимость?
 Необходимо исправить логику создания файла:
 1. исправить регулярное выражение на nginx, которое проверяет заголовок `True-Real-Ip` (пример корректного регулярного выражения - `^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$)`
 2. использовать стандартную функцию создания файла `Create` из пакета `os`
 
-##CWE-918: Server-Side Request Forgery (SSRF) + CWE-444: Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')
-###Как эксплуатировать уязвимость?
+## CWE-918: Server-Side Request Forgery (SSRF) + CWE-444: Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')
+### Как эксплуатировать уязвимость?
 По логам запросов от жюрейной системы или анализируя код, можно было найти эндпоинт, отвечающий за проверку состояния API:
 ![](https://github.com/andreika47/Quiet-CTF/blob/main/BoilerRoom/pics/17.png)
 
@@ -143,7 +143,7 @@ Host: api:5555
 
 Успех! Дополнительный код экплуатации в репозитории в файле [smuggle.py](https://github.com/andreika47/Quiet-CTF/blob/main/BoilerRoom/solvers/smuggle.py)
 
-###Как исправить уязвимость?
+### Как исправить уязвимость?
 **CWE-918:** реализовать корректную проверку домена на `/api/healthcheck`. Разрешать отправлять запросы только к локальному веб серверу или перечислить адреса, на которые можно отправлять запросы
 **CWE-444:** защититься от SSRF. Также рекомендуется выделить отдельный `location` для WebSocket взаимодействия и разрешить заголовки `Upgrade` только на нем. Блокировать на прокси `Upgrade` запросы к эндпоинтам, которые не реализуют WebSocket взаимодейтсвие
 
