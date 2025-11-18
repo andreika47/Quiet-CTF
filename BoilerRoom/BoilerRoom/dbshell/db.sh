@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+	GRANT ALL PRIVILEGES ON DATABASE "$POSTGRES_DB" TO "$POSTGRES_USER";
+	CREATE TABLE IF NOT EXISTS orders (
+	  orderid VARCHAR(64) UNIQUE NOT NULL PRIMARY KEY,
+	  type VARCHAR(32) NOT NULL,
+	  username VARCHAR(16) NOT NULL,
+	  coupon VARCHAR NOT NULL,
+	  datetime VARCHAR NOT NULL,
+	  status BOOLEAN NOT NULL
+	);
+	INSERT INTO orders VALUES('$FLAG_ID', 'Кружка чая', 'admin', '$FLAG', NOW(), TRUE);
+EOSQL
