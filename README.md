@@ -9,17 +9,22 @@ https://t.me/quiet_ctf
 * Das Ist Thompson
 <br>
 	#non-commutative #thompson
+<br>
 * Among Aliens (crypto + web)
 <br>
 	#matrix #linear_algebra #web #path_traversal
+<br>
 * Tachmasib
 <br>
 	#crypto #DH
+<br>
 
 ### Web
 * BoilerRoom
 <br>
 	#web #uuid #rce #websocket #smuggling
+<br>
 * Multipassport
 <br>
 	#web #xss #cookie
+<br>
