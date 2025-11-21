@@ -28,4 +28,4 @@ $K = a1 * B * b1 = a1 * b2 * w * a2 * b1 = b2 * a1 * w * b1 * a2 = b2 * A * a2$
 Пример кода решения: [solve.py](https://github.com/andreika47/Quiet-CTF/blob/main/Das%20Ist%20Thompson/solve.py)
 
 
-#crypto #non-commutative #thompson
+#crypto #non_commutative #thompson
