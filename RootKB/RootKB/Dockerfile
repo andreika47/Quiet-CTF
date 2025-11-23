@@ -1,2 +1,2 @@
-FROM 1panel/maxkb:v2.3.0
+FROM 1panel/maxkb:v2.3.1
 COPY flag /root/flag

