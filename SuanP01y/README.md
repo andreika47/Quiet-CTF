@@ -55,4 +55,4 @@ $${k_i}(x) * hint = {l_i}(x)$$,<br>
 * ${k_i}(x) = t_0$,
 * ${l_i}(x) = t_1 * X^{r_1 - r_0}$;
 
-#crypto #polynomial #linear_algebra
+#crypto #polynomial #general_algebra #computer_algebra
