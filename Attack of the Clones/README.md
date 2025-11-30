@@ -53,7 +53,6 @@ r = (A1 - A2)**(-1) * (u1 - u2)
 m = round_q(v1 - t1*r)
 flag = Integer(m[::-1], 2).to_bytes(n//8).decode()
 print(flag)
-
 ```
 
-#crypto #polynomial #general_algebra #computer_algebra
+#crypto #kyber #general_algebra #computer_algebra
