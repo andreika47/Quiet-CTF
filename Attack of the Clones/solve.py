@@ -1,11 +1,11 @@
 import json
 import numpy as np
+from sage.all import *
 
 q = 3329
 n = 512
 k = 4
-F = GF(q)
-P = F[]
+P = PolynomialRing(GF(q), 'x')
 x = P.gen()
 R = P.quotient_ring(x**n + 1)
 X = R.gen()
@@ -25,5 +25,5 @@ def round_q(m):
 
 r = (A1 - A2)**(-1) * (u1 - u2)
 m = round_q(v1 - t1*r)
-flag = Integer(m[::-1], 2).to_bytes(n//8).decode()
+flag = int(Integer(m[::-1], 2)).to_bytes(n//8).decode()
 print(flag)
