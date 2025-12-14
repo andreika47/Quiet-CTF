@@ -1,0 +1,20 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "8025:80"
+    environment:
+      - FLAG=EPFL{test_flag_placeholder}
+      - DOMAIN=auth.ctf.cx
+      - SMTP2HTTP_TOKEN=different_secret_on_remote
+  
+  smtp2http:
+    build:
+      context: ./smtp2http
+    command: ["--webhook=http://web/api/email?token=different_secret_on_remote"]
+
+  mta:
+    build: ./mta
+    ports:
+      - "25:25"
+      - "587:25" # in case player's ISP blocks port 25

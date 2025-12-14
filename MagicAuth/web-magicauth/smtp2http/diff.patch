@@ -1,0 +1,49 @@
+diff --git a/go.mod b/go.mod
+index a12f908..0402218 100644
+--- a/go.mod
++++ b/go.mod
+@@ -6,5 +6,6 @@ require (
+ 	github.com/alash3al/go-smtpsrv v0.0.0-20220704173150-cdaad3f3f582 // indirect
+ 	github.com/go-resty/resty/v2 v2.3.0
+ 	github.com/miekg/dns v1.1.50 // indirect
++	github.com/zaccone/spf v0.0.0-20170817004109-76747b8658d9 // indirect
+ 	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
+ )
+diff --git a/main.go b/main.go
+index b7b6b4f..8e37638 100644
+--- a/main.go
++++ b/main.go
+@@ -6,12 +6,14 @@ import (
+ 	"fmt"
+ 	"io/ioutil"
+ 	"log"
++	"net"
+ 	"net/mail"
+ 	"strings"
+ 	"time"
+ 
+ 	"github.com/alash3al/go-smtpsrv"
+ 	"github.com/go-resty/resty/v2"
++	"github.com/zaccone/spf"
+ )
+ 
+ func main() {
+@@ -27,7 +29,17 @@ func main() {
+ 				return errors.New("Cannot read your message: " + err.Error())
+ 			}
+ 
+-			spfResult, _, _ := c.SPF()
++			// replace source IP with the one from Received header because there is an additional MTA in front
++			var spfResult spf.Result = spf.None
++			receivedAddr := msg.Header.Get("Received")
++			if receivedAddr == "" {
++				spfResult, _, _ = c.SPF()
++			} else {
++				_, host, err := smtpsrv.SplitAddress(c.From().Address)
++				if err == nil {
++					spfResult, _, _ = spf.CheckHost(net.ParseIP(receivedAddr), host, c.From().Address)
++				}
++			}
+ 
+ 			jsonData := EmailMessage{
+ 				ID:            msg.MessageID,
