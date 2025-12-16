@@ -160,4 +160,5 @@ $x^2 - 1 = (x + 1) * (x - 1) \pmod n$
 
 Полный код решения: [solve.py](https://github.com/andreika47/Quiet-CTF/blob/main/yukari/solve.py)
 
-#crypto #rsa #rsa #number_theory
+#crypto #rsa #number_theory
+
