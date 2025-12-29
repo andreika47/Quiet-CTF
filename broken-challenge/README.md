@@ -92,7 +92,7 @@ openssl ocsp -index index.txt \
 ```
 cat exp_cert.crt cert.crt > exp_cert.pem
 ```
-Упакуем нашу цепочку сертификатов и OCSP ответ в `.cbor` файл с помощью утилиты `gen-certurl` из ![go/signedexchange](https://github.com/WICG/webpackage/blob/main/go/signedexchange/README.md?ref=blog.splitline.tw):
+Упакуем нашу цепочку сертификатов и OCSP ответ в `.cbor` файл с помощью утилиты `gen-certurl` из [go/signedexchange](https://github.com/WICG/webpackage/blob/main/go/signedexchange/README.md?ref=blog.splitline.tw):
 ```
 gen-certurl -pem exp_cert.pem -ocsp exp_cert.ocsp > exp_cert.cbor
 ```
