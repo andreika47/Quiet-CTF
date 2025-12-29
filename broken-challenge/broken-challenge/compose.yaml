@@ -1,0 +1,9 @@
+services:
+  bot:
+    build: ./bot
+    ports:
+      - "1337:1337"
+    restart: unless-stopped
+    environment:
+      - FLAG=SECCON{redacted}
+    init: true
