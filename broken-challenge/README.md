@@ -120,7 +120,7 @@ gen-signedexchange \
 </html>
 ```
 Поднимаем сервер, который будет раздавать подписанную статику и отправляем ссылку на наш `exploit.sxg` файл боту. В данном случае ссылка, `https://10.200.200.2/exploit.sxg`.
-Пример сервера: ![server.py](https://github.com/andreika47/Quiet-CTF/blob/main/broken-challenge/solve/server.py)
-Пример скрипта для генерации необходимых файлов: ![gen-sxg.sh](https://github.com/andreika47/Quiet-CTF/blob/main/broken-challenge/solve/gen-sxg.sh)
+Пример сервера: [server.py](https://github.com/andreika47/Quiet-CTF/blob/main/broken-challenge/solve/server.py)
+Пример скрипта для генерации необходимых файлов: [gen-sxg.sh](https://github.com/andreika47/Quiet-CTF/blob/main/broken-challenge/solve/gen-sxg.sh)
 
 #web #sxg #cookie
