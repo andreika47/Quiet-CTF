@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DiceMiner</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0f0e17;
+      --panel: #1a1926;
+      --border: #2e2b3f;
+      --text: #e0dfe8;
+      --dim: #6b6888;
+      --accent: #7c5cbf;
+      --gold: #f0c040;
+      --red: #e84057;
+      --green: #40d870;
+      --cyan: #40c8e0;
+      --dirt: #7a5230;
+      --coal: #3a3a44;
+      --iron: #a0622a;
+      --ore-gold: #c89820;
+      --diamond: #28a0b8;
+      --sky: #182848;
+      --mined: #12111c;
+      --surface: #3a6830;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      line-height: 1.6;
+      min-height: 100vh;
+      image-rendering: pixelated;
+    }
+
+    /* ---- Auth Screen ---- */
+    #auth-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .title-art {
+      font-size: 20px;
+      color: var(--gold);
+      text-shadow: 3px 3px 0 #6a4000, -1px -1px 0 #000;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    .title-art small {
+      display: block;
+      font-size: 8px;
+      color: var(--dim);
+      margin-top: 8px;
+      text-shadow: none;
+    }
+
+    .auth-box {
+      background: var(--panel);
+      border: 3px solid var(--border);
+      padding: 24px;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    input[type="text"], input[type="password"], input[type="number"] {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 10px;
+      padding: 8px 10px;
+      outline: none;
+    }
+    input:focus { border-color: var(--accent); }
+
+    .btn {
+      font-family: inherit;
+      font-size: 9px;
+      padding: 8px 14px;
+      border: 2px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .btn:hover:not(:disabled) { background: var(--border); border-color: var(--accent); }
+    .btn:disabled { opacity: 0.3; cursor: default; }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: #9370db; }
+    .btn-gold { background: #6a4000; border-color: var(--gold); color: var(--gold); }
+    .btn-gold:hover:not(:disabled) { background: #8a5800; }
+    .btn-row { display: flex; gap: 8px; }
+    .btn-row .btn { flex: 1; }
+
+    .auth-error { color: var(--red); font-size: 8px; text-align: center; }
+
+    /* ---- Visibility ---- */
+    .hidden { display: none !important; }
+
+    .hud {
+      background: var(--panel);
+      border-bottom: 3px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .hud-logo {
+      font-size: 12px;
+      color: var(--gold);
+      text-shadow: 2px 2px 0 #6a4000;
+    }
+
+    .hud-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hud-label { color: var(--dim); font-size: 8px; }
+    .hud-value { color: var(--gold); font-size: 10px; }
+    .hud-value.energy { color: var(--green); }
+    .hud-value.pos { color: var(--cyan); font-size: 8px; }
+
+    .energy-bar-wrap {
+      width: 100px;
+      height: 10px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      overflow: hidden;
+    }
+    .energy-bar-fill {
+      height: 100%;
+      background: var(--green);
+      transition: width 0.3s;
+    }
+
+    .hud-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+    /* ---- Layout ---- */
+    #game-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .game-layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      padding: 12px;
+      gap: 12px;
+    }
+
+    .col-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .col-main .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .col-side {
+      width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 3px solid var(--border);
+      padding: 12px;
+    }
+    .panel-title {
+      font-size: 8px;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ---- Mine Grid ---- */
+    .mine-grid {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .mine-row { display: flex; gap: 0; }
+
+    .cell {
+      width: var(--cell-size, 24px);
+      height: var(--cell-size, 24px);
+      border: 1px solid rgba(255,255,255,0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: calc(var(--cell-size, 24px) * 0.45);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .cell-sky { background: #182848; }
+
+    .cell-surface {
+      background: #3a6830;
+      background-image:
+        radial-gradient(circle at 25% 40%, #4a8040 2px, transparent 2px),
+        radial-gradient(circle at 75% 70%, #4a8040 2px, transparent 2px);
+    }
+    .cell-surface.v1 {
+      background-image:
+        radial-gradient(circle at 60% 30%, #4a8040 2px, transparent 2px),
+        radial-gradient(circle at 20% 80%, #2e5522 2px, transparent 2px);
+    }
+    .cell-surface.v2 {
+      background-image:
+        radial-gradient(circle at 40% 60%, #2e5522 2px, transparent 2px),
+        radial-gradient(circle at 80% 20%, #4a8040 2px, transparent 2px);
+    }
+
+    .cell-stone {
+      background: #4a4a52;
+      background-image:
+        radial-gradient(circle at 40% 35%, #3a3a42 3px, transparent 3px),
+        radial-gradient(circle at 75% 70%, #555560 2px, transparent 2px);
+    }
+    .cell-stone.v1 {
+      background-image:
+        radial-gradient(circle at 65% 45%, #3a3a42 2px, transparent 2px),
+        radial-gradient(circle at 25% 75%, #555560 3px, transparent 3px);
+    }
+    .cell-stone.v2 {
+      background-image:
+        radial-gradient(circle at 20% 25%, #555560 2px, transparent 2px),
+        radial-gradient(circle at 70% 60%, #3a3a42 3px, transparent 3px);
+    }
+
+    .cell-coal {
+      background: #3a3a44;
+      background-image:
+        radial-gradient(circle at 30% 30%, #222230 3px, transparent 3px),
+        radial-gradient(circle at 80% 70%, #222230 2px, transparent 2px);
+    }
+    .cell-coal.v1 {
+      background-image:
+        radial-gradient(circle at 70% 40%, #222230 3px, transparent 3px),
+        radial-gradient(circle at 20% 80%, #4a4a56 2px, transparent 2px);
+    }
+    .cell-coal.v2 {
+      background-image:
+        radial-gradient(circle at 50% 60%, #4a4a56 2px, transparent 2px),
+        radial-gradient(circle at 10% 20%, #222230 3px, transparent 3px);
+    }
+
+    .cell-iron {
+      background: #8a5420;
+      background-image:
+        radial-gradient(ellipse at 30% 50%, #b07030 4px, transparent 4px),
+        radial-gradient(circle at 75% 25%, #6a3a10 3px, transparent 3px);
+    }
+    .cell-iron.v1 {
+      background-image:
+        radial-gradient(ellipse at 60% 70%, #b07030 3px, transparent 3px),
+        radial-gradient(circle at 20% 30%, #6a3a10 4px, transparent 4px);
+    }
+    .cell-iron.v2 {
+      background-image:
+        radial-gradient(circle at 40% 20%, #b07030 2px, transparent 2px),
+        radial-gradient(ellipse at 80% 60%, #6a3a10 4px, transparent 4px);
+    }
+
+    .cell-gold {
+      background: #9a7818;
+      background-image:
+        radial-gradient(circle at 25% 35%, #d4aa30 3px, transparent 3px),
+        radial-gradient(circle at 70% 65%, #806010 3px, transparent 3px);
+    }
+    .cell-gold.v1 {
+      background-image:
+        radial-gradient(circle at 60% 25%, #d4aa30 2px, transparent 2px),
+        radial-gradient(circle at 30% 75%, #d4aa30 3px, transparent 3px);
+    }
+    .cell-gold.v2 {
+      background-image:
+        radial-gradient(circle at 80% 40%, #806010 3px, transparent 3px),
+        radial-gradient(circle at 15% 55%, #d4aa30 2px, transparent 2px);
+    }
+
+    .cell-diamond {
+      background: #1a7888;
+      background-image:
+        radial-gradient(circle at 30% 30%, #40d0e8 2px, transparent 2px),
+        radial-gradient(circle at 75% 70%, #40d0e8 2px, transparent 2px);
+    }
+    .cell-diamond.v1 {
+      background-image:
+        radial-gradient(circle at 65% 35%, #40d0e8 2px, transparent 2px),
+        radial-gradient(circle at 20% 70%, #106070 3px, transparent 3px);
+    }
+    .cell-diamond.v2 {
+      background-image:
+        radial-gradient(circle at 45% 55%, #106070 3px, transparent 3px),
+        radial-gradient(circle at 85% 20%, #40d0e8 2px, transparent 2px);
+    }
+
+    .cell-mined {
+      background: #12111c;
+    }
+    .cell-mined.v1 { background: #14131e; }
+    .cell-mined.v2 { background: #100f1a; }
+
+    .cell-player {
+      outline: 2px solid #fff;
+      outline-offset: -2px;
+      z-index: 2;
+      font-size: 16px;
+    }
+
+    .cell-preview {
+      outline: 2px solid rgba(255,255,255,0.5);
+      outline-offset: -2px;
+      filter: brightness(1.4);
+    }
+
+    .controls-hint {
+      margin-top: 8px;
+      font-size: 7px;
+      color: var(--dim);
+      text-align: center;
+      line-height: 1.8;
+    }
+    .controls-hint kbd {
+      background: var(--border);
+      padding: 1px 4px;
+      border: 1px solid var(--dim);
+      font-family: inherit;
+    }
+
+    /* ---- Shop ---- */
+    .shop-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .shop-item:last-child { border-bottom: none; }
+    .shop-name { font-size: 9px; }
+    .shop-detail { font-size: 7px; color: var(--dim); margin-top: 2px; }
+    .shop-btn { font-size: 7px; padding: 4px 8px; white-space: nowrap; }
+    .shop-owned { color: var(--dim); font-size: 7px; }
+
+    .flag-item {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 2px solid var(--gold);
+    }
+    .flag-item .shop-name { color: var(--gold); }
+
+    /* ---- Ore Guide ---- */
+    .ore-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 8px; }
+    .ore-swatch { width: 14px; height: 14px; border: 1px solid rgba(255,255,255,0.1); }
+
+    /* ---- Log ---- */
+    .log-list {
+      max-height: 180px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .log-list::-webkit-scrollbar { width: 4px; }
+    .log-list::-webkit-scrollbar-track { background: var(--bg); }
+    .log-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .log-entry {
+      font-size: 7px;
+      color: var(--dim);
+      line-height: 1.5;
+    }
+    .log-positive { color: var(--green); }
+    .log-negative { color: var(--red); }
+
+
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: var(--red);
+      color: #fff;
+      font-family: inherit;
+      font-size: 8px;
+      padding: 10px 14px;
+      border: 2px solid #fff;
+      z-index: 100;
+      animation: toastIn 0.2s;
+    }
+    .toast.success { background: #1a5030; border-color: var(--green); color: var(--green); }
+    @keyframes toastIn { from { transform: translateY(10px); opacity: 0; } }
+
+    /* ---- Flag reveal ---- */
+    .flag-reveal {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+      padding: 20px;
+    }
+    .flag-reveal h1 { font-size: 16px; color: var(--gold); text-shadow: 3px 3px 0 #6a4000; }
+    .flag-reveal code {
+      font-family: inherit;
+      font-size: 11px;
+      color: var(--green);
+      background: var(--bg);
+      border: 3px solid var(--green);
+      padding: 16px 24px;
+      display: block;
+      word-break: break-all;
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 800px) {
+      .game-layout { flex-direction: column; }
+      .col-side { width: 100%; margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== Auth ==================== -->
+  <div id="auth-screen">
+    <div class="title-art">
+      DiceMiner
+    </div>
+    <div class="auth-box">
+      <input id="auth-user" type="text" placeholder="Username" autocomplete="off" />
+      <input id="auth-pass" type="password" placeholder="Password" />
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="doRegister()">Register</button>
+        <button class="btn" onclick="doLogin()">Login</button>
+      </div>
+      <p id="auth-error" class="auth-error hidden"></p>
+    </div>
+  </div>
+
+  <!-- ==================== Game ==================== -->
+  <div id="game-screen" class="hidden">
+    <div class="hud">
+      <span class="hud-logo">DiceMiner</span>
+      <div class="hud-stat">
+        <span class="hud-label">DC</span>
+        <span class="hud-value" id="hud-balance">0</span>
+      </div>
+      <div class="hud-stat">
+        <span class="hud-label">Energy</span>
+        <div class="energy-bar-wrap"><div class="energy-bar-fill" id="hud-energy-bar"></div></div>
+        <span class="hud-value energy" id="hud-energy">250</span>
+      </div>
+      <div class="hud-stat">
+        <span class="hud-label">Pickaxe</span>
+        <span class="hud-value" id="hud-pickaxe" style="color:var(--text);">Wooden</span>
+      </div>
+      <div class="hud-right">
+        <div class="hud-stat">
+          <span class="hud-label">Pos</span>
+          <span class="hud-value pos" id="hud-pos">0, 0</span>
+        </div>
+        <button class="btn" onclick="doRestart()" style="font-size:7px;padding:4px 8px;">Restart</button>
+        <button class="btn" onclick="doLogout()" style="font-size:7px;padding:4px 8px;">Logout</button>
+      </div>
+    </div>
+
+    <div class="game-layout">
+      <div class="col-main">
+        <!-- Mine Grid -->
+        <div class="panel">
+          <div class="panel-title">Mine</div>
+          <div class="mine-grid" id="mine-grid"></div>
+          <div class="controls-hint">
+            <kbd>Click</kbd> to dig &mdash; <kbd>WASD</kbd> / <kbd>Arrows</kbd> to move
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="col-side">
+        <!-- Shop -->
+        <div class="panel">
+          <div class="panel-title">Shop</div>
+          <div id="shop"></div>
+        </div>
+
+        <!-- Ore Guide -->
+        <div class="panel">
+          <div class="panel-title">Ore Guide</div>
+          <div class="ore-row"><div class="ore-swatch cell-stone"></div> Stone &mdash; 10 DC</div>
+          <div class="ore-row"><div class="ore-swatch cell-coal"></div> Coal (y &le; -1, 35%) &mdash; 80 DC</div>
+          <div class="ore-row"><div class="ore-swatch cell-iron"></div> Iron (y &le; -15, 20%) &mdash; 300 DC &mdash; needs Stone Pickaxe</div>
+          <div class="ore-row"><div class="ore-swatch cell-gold"></div> Gold (y &le; -30, 10%) &mdash; 750 DC &mdash; needs Iron Pickaxe</div>
+          <div class="ore-row"><div class="ore-swatch cell-diamond"></div> Diamond (y &le; -50, 4%) &mdash; 1,500 DC &mdash; needs Gold Pickaxe</div>
+          <div style="margin-top:6px;font-size:7px;color:var(--dim);">Hauling fee: 95% of ore value</div>
+        </div>
+
+        <!-- Log -->
+        <div class="panel">
+          <div class="panel-title">Dig Log</div>
+          <div class="log-list" id="log"></div>
+        </div>
+
+        <!-- Stats -->
+        <div class="panel">
+          <div class="panel-title">Stats</div>
+          <div style="font-size:8px;display:flex;flex-direction:column;gap:4px;">
+            <div>Blocks mined: <span id="stat-blocks" style="color:var(--cyan);">0</span></div>
+            <div>Energy is finite &mdash; dig wisely!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ================================================================
+// State
+// ================================================================
+let S = null;
+let GRX = 8, GRY = 8;
+
+// ================================================================
+// API
+// ================================================================
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch('/api' + path, opts);
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.error);
+  return d;
+}
+
+// ================================================================
+// Screens
+// ================================================================
+function showScreen(id) {
+  for (const s of ['auth-screen', 'game-screen']) {
+    $(s).classList.toggle('hidden', s !== id);
+  }
+}
+
+// ================================================================
+// Auth
+// ================================================================
+async function doRegister() {
+  try {
+    const u = $('auth-user').value.trim();
+    const p = $('auth-pass').value;
+    if (!u || !p) return showAuthErr('fill in both fields');
+    await api('POST', '/register', { username: u, password: p });
+    afterAuth();
+  } catch (e) { showAuthErr(e.message); }
+}
+
+async function doLogin() {
+  try {
+    const u = $('auth-user').value.trim();
+    const p = $('auth-pass').value;
+    if (!u || !p) return showAuthErr('fill in both fields');
+    await api('POST', '/login', { username: u, password: p });
+    afterAuth();
+  } catch (e) { showAuthErr(e.message); }
+}
+
+async function afterAuth() {
+  try {
+    S = await api('GET', '/state');
+    if (!S.started) {
+      const x = Math.floor(Math.random() * 200001) - 100000;
+      await api('POST', '/start', { x });
+      S = await api('GET', '/state');
+    }
+    showScreen('game-screen');
+    render();
+  } catch {
+    showScreen('auth-screen');
+  }
+}
+
+async function doLogout() {
+  await api('POST', '/logout');
+  S = null;
+  showScreen('auth-screen');
+}
+
+async function doRestart() {
+  if (!confirm('Restart? This resets all progress.')) return;
+  const x = Math.floor(Math.random() * 200001) - 100000;
+  await api('POST', '/start', { x });
+  await refresh();
+}
+
+function showAuthErr(msg) {
+  const el = $('auth-error');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+// ================================================================
+// Game
+// ================================================================
+async function refresh() {
+  try {
+    S = await api('GET', '/state');
+    if (!S.started) {
+      showScreen('start-screen');
+      return;
+    }
+    render();
+  } catch {
+    showScreen('auth-screen');
+  }
+}
+
+function render() {
+  $('hud-balance').textContent = S.balance.toLocaleString();
+  $('hud-energy').textContent = S.energy;
+  $('hud-energy-bar').style.width = (S.energy / 250 * 100) + '%';
+  $('hud-pickaxe').textContent = S.pickaxeInfo.name.replace(' Pickaxe', '');
+  $('hud-pos').textContent = S.x + ', ' + S.y;
+  $('stat-blocks').textContent = S.blocksMined.toLocaleString();
+  renderShop();
+  renderLog();
+  renderGrid();
+}
+
+// ================================================================
+// Grid
+// ================================================================
+let gridCells = {};
+
+function cellClass(x, y) {
+  if (S && S.grid) {
+    const key = x + ',' + y;
+    const info = S.grid[key];
+    if (info) {
+      if (info.mined) return 'cell-mined';
+      return 'cell-' + info.type;
+    }
+  }
+  if (y >= 1) return 'cell-sky';
+  return 'cell-stone';
+}
+
+function offsetToDir(dx, dy) {
+  if (dx === 0 && dy === 0) return null;
+  if (Math.abs(dx) >= Math.abs(dy)) return dx > 0 ? 'right' : 'left';
+  return dy > 0 ? 'up' : 'down';
+}
+
+function previewOffsets(dir) {
+  const ddx = dir === 'left' ? -1 : dir === 'right' ? 1 : 0;
+  const ddy = dir === 'up' ? 1 : dir === 'down' ? -1 : 0;
+  const range = S.pickaxeInfo.range;
+  const offsets = [];
+  let cx = 0, cy = 0;
+  for (let i = 0; i < range; i++) {
+    cx += ddx;
+    cy += ddy;
+    if (S.y + cy > 0) break;
+    offsets.push([cx, cy]);
+  }
+  return offsets;
+}
+
+let currentPreview = [];
+
+function clearPreview() {
+  for (const k of currentPreview) {
+    const el = gridCells[k];
+    if (el) el.classList.remove('cell-preview');
+  }
+  currentPreview = [];
+}
+
+function showPreview(dir) {
+  clearPreview();
+  const offsets = previewOffsets(dir);
+  for (const [ox, oy] of offsets) {
+    const k = ox + ',' + oy;
+    const el = gridCells[k];
+    if (el) {
+      el.classList.add('cell-preview');
+      currentPreview.push(k);
+    }
+  }
+}
+
+function renderGrid() {
+  const g = $('mine-grid');
+  g.innerHTML = '';
+  gridCells = {};
+  const px = S.x, py = S.y;
+
+  const gw = g.clientWidth || 600;
+  const gh = g.clientHeight || 400;
+  const CELL_SIZE = 24;
+  const cols = Math.floor(gw / CELL_SIZE);
+  const rows = Math.floor(gh / CELL_SIZE);
+  GRX = Math.min(Math.floor((cols - 1) / 2), 24);
+  GRY = Math.min(Math.floor((rows - 1) / 2), 24);
+  if (GRX < 4) GRX = 4;
+  if (GRY < 4) GRY = 4;
+  g.style.setProperty('--cell-size', CELL_SIZE + 'px');
+
+  for (let dy = GRY; dy >= -GRY; dy--) {
+    const row = document.createElement('div');
+    row.className = 'mine-row';
+    for (let dx = -GRX; dx <= GRX; dx++) {
+      const x = px + dx, y = py + dy;
+      const key = x + ',' + y;
+      const c = document.createElement('div');
+      c.className = 'cell';
+      c.dataset.dx = dx;
+      c.dataset.dy = dy;
+
+      c.classList.add(cellClass(x, y));
+
+      const v = ((x * 7 + y * 13) & 0x7fffffff) % 3;
+      if (v === 1) c.classList.add('v1');
+      else if (v === 2) c.classList.add('v2');
+
+      if (dx === 0 && dy === 0) {
+        c.classList.add('cell-player');
+        c.textContent = '\u26CF';
+      }
+
+      c.addEventListener('mouseenter', () => {
+        const dir = offsetToDir(dx, dy);
+        if (dir) showPreview(dir);
+      });
+      c.addEventListener('mouseleave', clearPreview);
+
+      c.addEventListener('click', () => {
+        const dir = offsetToDir(dx, dy);
+        if (dir) doDig(dir);
+      });
+
+      gridCells[dx + ',' + dy] = c;
+      row.appendChild(c);
+    }
+    g.appendChild(row);
+  }
+}
+
+// ================================================================
+// Shop
+// ================================================================
+function renderShop() {
+  const el = $('shop');
+  el.innerHTML = '';
+
+  S.pickaxes.forEach((p, i) => {
+    if (i === 0) return;
+    const owned = S.pickaxe >= i;
+    const can = S.balance >= p.cost;
+    const d = document.createElement('div');
+    d.className = 'shop-item';
+    d.innerHTML = `
+      <div>
+        <div class="shop-name">${p.name}</div>
+        <div class="shop-detail">Range: ${p.range}</div>
+      </div>
+      ${owned
+        ? '<span class="shop-owned">Owned</span>'
+        : `<button class="btn shop-btn${can ? ' btn-primary' : ''}" ${can ? '' : 'disabled'}
+            onclick="doBuy('${i}')">${p.cost.toLocaleString()} DC</button>`
+      }
+    `;
+    el.appendChild(d);
+  });
+
+  const can = S.balance >= S.flagCost;
+  const f = document.createElement('div');
+  f.className = 'shop-item flag-item';
+  f.innerHTML = `
+    <div>
+      <div class="shop-name" style="color:var(--gold);">Diamond Pickaxe</div>
+      <div class="shop-detail">The ultimate prize</div>
+    </div>
+    <button class="btn shop-btn${can ? ' btn-gold' : ''}" ${can ? '' : 'disabled'}
+      onclick="doBuyFlag()">${S.flagCost.toLocaleString()} DC</button>
+  `;
+  el.appendChild(f);
+}
+
+// ================================================================
+// Log
+// ================================================================
+function renderLog() {
+  const el = $('log');
+  el.innerHTML = '';
+  const entries = S.log.slice().reverse();
+  entries.forEach(e => {
+    const d = document.createElement('div');
+    d.className = 'log-entry ' + (e.net >= 0 ? 'log-positive' : 'log-negative');
+    const t = new Date(e.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const sign = e.net >= 0 ? '+' : '';
+    d.textContent = `[${t}] ${e.direction} ${e.blocks}blk ${sign}${e.net} DC`;
+    el.appendChild(d);
+  });
+}
+
+// ================================================================
+// Actions
+// ================================================================
+async function doDig(dir) {
+  try {
+    await api('POST', '/dig', { direction: dir });
+    await refresh();
+  } catch (e) { toast(e.message); }
+}
+
+async function doMove(x, y) {
+  try {
+    await api('POST', '/move', { x, y });
+    await refresh();
+  } catch (e) { toast(e.message); }
+}
+
+async function doBuy(item) {
+  try {
+    await api('POST', '/buy', { item });
+    await refresh();
+    toast('Upgrade purchased!', true);
+  } catch (e) { toast(e.message); }
+}
+
+async function doBuyFlag() {
+  try {
+    const result = await api('POST', '/buy', { item: 'flag' });
+    if (result.flag) {
+      $('game-screen').innerHTML = `
+        <div class="flag-reveal">
+          <h1>You found the<br>Diamond Pickaxe!</h1>
+          <code>${result.flag}</code>
+        </div>
+      `;
+    }
+  } catch (e) { toast(e.message); }
+}
+
+document.addEventListener('keydown', (e) => {
+  if ($('game-screen').classList.contains('hidden')) return;
+  if (document.activeElement.tagName === 'INPUT') return;
+  const map = { ArrowUp: [0, 1], ArrowDown: [0, -1], ArrowLeft: [-1, 0], ArrowRight: [1, 0],
+                w: [0, 1], s: [0, -1], a: [-1, 0], d: [1, 0] };
+  const delta = map[e.key];
+  if (!delta) return;
+  e.preventDefault();
+  const tx = S.x + delta[0];
+  const ty = S.y + delta[1];
+  doMove(tx, ty);
+});
+
+function $(id) { return document.getElementById(id); }
+
+function toast(msg, ok) {
+  if (!msg) return;
+  const t = document.createElement('div');
+  t.className = 'toast' + (ok ? ' success' : '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+afterAuth();
+</script>
+</body>
+</html>
