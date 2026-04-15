@@ -25,17 +25,17 @@ shared = normalize(
 ```
 Поскольку `scramble()` сохраняет тип узла, то
 ```math
-Δ(alice_pub) = Δ(public_info) * Δ(alice_priv)
-Δ(alice_priv) = Δ(alice_pub) / Δ(public_info)
+Δ(alice\_pub) = Δ(public\_info) * Δ(alice\_priv)
+Δ(alice\_priv) = Δ(alice\_pub) / Δ(public\_info)
 ```
 и аналогично
 ```math
-Δ(bob_pub) = Δ(public_info) * Δ(bob_priv)
-Δ(bob_priv) = Δ(bob_pub) / Δ(public_info)
+Δ(bob\_pub) = Δ(public\_info) * Δ(bob\_priv)
+Δ(bob\_priv) = Δ(bob\_pub) / Δ(public\_info)
 ```
 А значит общий закрытый ключ можно вычислить как
 ```math
-shared = Δ(alice_priv) * Δ(bob_pub) = Δ(alice_pub) / Δ(public_info) * Δ(bob_pub)
+shared = Δ(alice\_priv) * Δ(bob\_pub) = Δ(alice\_pub) / Δ(public\_info) * Δ(bob\_pub)
 ```
 где нам известны все три значения.
 
