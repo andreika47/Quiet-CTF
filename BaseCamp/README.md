@@ -165,6 +165,6 @@ func (h *Handler) Check(c *gin.Context) {
 3. Добиваемся дедлока на файле с отозванными токенами
 4. Пытаемся получить `slug` токен для необходимого урока и запрашиваем его контент
 
-Пример кода с реализацией атаки: [solve.py](https://github.com/andreika47/Quiet-CTF/blob/main/basecamp/solve.py)
+Пример кода с реализацией атаки: [solve.py](https://github.com/andreika47/Quiet-CTF/blob/main/BaseCamp/solve.py)
 
 #web #go #jwt #race_condition
