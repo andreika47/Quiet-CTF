@@ -73,7 +73,7 @@ body[onload^="fetch('flag=GPNCTF{B"] {
 ```
 При нахождении селектором нужной части флага в теле, браузер бота применяет стиль - пытается установить фоновое изображение по указанному URL, тем самым делая запрос на наш сервер, с указанием найденной части флага. Так постепенно мы сможем восстановить весь флаг.
 
-[Пример кода сервер](https://github.com/andreika47/Quiet-CTF/blob/main/Tiny%20Web/solve-server.py)
+[Пример кода сервер](https://github.com/andreika47/Quiet-CTF/blob/main/Tiny%20Web/solve-server.py)<br>
 [Пример автоматизации запуска бота](https://github.com/andreika47/Quiet-CTF/blob/main/Tiny%20Web/solve.sh)
 
-#web #node #firefox #crlf #css
+#web #node #firefox #css
