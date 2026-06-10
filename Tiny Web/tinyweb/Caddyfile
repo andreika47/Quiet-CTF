@@ -1,0 +1,8 @@
+:80 {
+    handle /bot* {
+        reverse_proxy localhost:8081
+    }
+    handle {
+        reverse_proxy localhost:8080
+    }
+}

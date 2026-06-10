@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - bot
+      - vuln-server
+
+  bot:
+    build: ./bot
+    environment:
+      - FLAG=GPNCTF{COd3_gO1f_15_Fun__FIr3FoX_FeAtuREs_TOO}
+    ports:
+      - "8081:8081"  # для отладки, не обязательно
+    depends_on:
+      - vuln-server
+
+  vuln-server:
+    build: ./server
+    ports:
+      - "8080:8080"
